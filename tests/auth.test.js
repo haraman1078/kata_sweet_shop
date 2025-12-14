@@ -28,14 +28,25 @@ describe('Auth Register', () => {
 
 
   it('should not allow duplicate emails', async () => {
-    const res = await request(app)
-      .post('/auth/register')
-      .send({
-        email: 'test1@example.com',
-        password: 'password123',
-      });
+  const email = `duplicate_${Date.now()}@example.com`;
 
-    expect(res.statusCode).toBe(409);
+  // First registration (should succeed)
+  await request(app)
+    .post('/auth/register')
+    .send({
+      email,
+      password: 'password123',
+    });
+
+  // Second registration with same email (should fail)
+  const res = await request(app)
+    .post('/auth/register')
+    .send({
+      email,
+      password: 'password123',
+    });
+
+  expect(res.statusCode).toBe(409);
   });
 });
 
